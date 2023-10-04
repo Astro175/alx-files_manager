@@ -3,5 +3,3 @@ how to create an API with Express how to authenticate a user how to store data i
 Collaborators:
 Precious Ajayi - Astro175,
 Oluwabunmi Olabode - Victoriabunmi72
-
-Collaborators: Precious Ajayi - Astro175, Oluwabunmi Olabode - Victoriabunmi72
