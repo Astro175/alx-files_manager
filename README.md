@@ -4,6 +4,6 @@ how to store data in MongoDB
 how to store temporary data in Redis
 how to setup and use a background worker
 
-Collaboratoes:
-Precious Ajayi - Astro175
+Collaborators:
+Precious Ajayi - Astro175,
 Oluwabunmi Olabode - Victoriabunmi72
