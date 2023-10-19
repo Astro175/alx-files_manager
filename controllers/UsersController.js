@@ -8,18 +8,14 @@ class UsersController {
     const Usercollection = dbClient.client.db('files_manager').collection('users');
 
     if (!email) {
-      res.status(400).json({ error: 'Missing email' });
-      res.end();
-      return;
+      return res.status(400).json({ error: 'Missing email' });
     }
     if (!password) {
-      res.status(400).json({ error: 'Missing password' });
-      res.end();
-      return;
+      return res.status(400).json({ error: 'Missing password' });
     }
     const user = await Usercollection.findOne({ email });
     if (user) {
-      res.status(400).json({ error: 'Already exist' });
+      return res.status(400).json({ error: 'Already exist' });
     }
     const hashedPw = sha1(password);
     const newUser = {
@@ -30,7 +26,6 @@ class UsersController {
     const id = record.insertedId;
 
     res.status(201).json({ email, id });
-    res.end();
   }
 }
 
