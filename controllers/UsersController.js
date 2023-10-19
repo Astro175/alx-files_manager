@@ -25,7 +25,7 @@ class UsersController {
     const record = await Usercollection.insertOne(newUser);
     const id = record.insertedId;
 
-    res.status(201).json({ email, id });
+    return res.status(201).json({ email, id });
   }
 }
 
