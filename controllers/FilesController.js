@@ -48,7 +48,7 @@ class FilesController {
     }
     if (parentId) {
       const _id = new ObjectId(parentId);
-      const file = Filecollection.find({ _id });
+      const file = Filecollection.findOne({ _id });
 
       if (!file) {
         return res.status(400).json({ error: 'Parent not found' });
