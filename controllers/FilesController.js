@@ -48,11 +48,12 @@ class FilesController {
     }
     if (parentId) {
       const _id = new ObjectId(parentId);
-      const file = Filecollection.findOne({ _id });
+      const file = await Filecollection.findOne({ _id });
 
       if (!file) {
         return res.status(400).json({ error: 'Parent not found' });
       }
+
       if (file.type !== 'folder') {
         return res.status(400).json({ error: 'Parent is not a folder' });
       }
