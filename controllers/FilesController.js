@@ -24,18 +24,10 @@ class FilesController {
       return res.status(401).json({ error: 'Unauthorized' });
     }
     const {
-      name, type, data,
+      name, type, data, parentId, isPublic,
     } = req.body;
-    let { parentId, isPublic } = req.body;
+
     const userId = user._id;
-
-    if (!isPublic) {
-      isPublic = 'false';
-    }
-
-    if (!parentId) {
-      parentId = 0;
-    }
 
     if (!name) {
       return res.status(400).json({ error: 'Missing name' });
@@ -64,17 +56,18 @@ class FilesController {
         userId,
         name,
         type,
-        parentId,
-        isPublic,
+        parentId: parentId || 0,
+        isPublic: isPublic || false,
       };
       const results = await Filecollection.insertOne(newFile);
       const folder = results.ops[0];
       return res.status(201).send(folder);
     }
-    const directoryPath = (process.env.FOLDER_PATH) ? process.env.FOLDER_PATH : '/tmp/files_manager';
+
+    const directoryPath = process.env.FOLDER_PATH || '/tmp/files_manager';
     const filename = uuidv4();
     const filepath = path.join(directoryPath, filename);
-    const fileData = Buffer.from(data, 'base64').toString('utf-8');
+    const fileData = Buffer.from(data, 'base64');
 
     async function ensuredirexists(dirPath) {
       try {
@@ -89,15 +82,15 @@ class FilesController {
     } catch (err) {
       console.log(`Got an error trying to write to a file: ${err.message}`);
     }
-    const localpath = path.join(__dirname, filepath);
+    const localpath = `${directoryPath}/${filename}`;
 
     console.log(userId);
     const newFile = {
       userId,
       name,
       type,
-      parentId,
-      isPublic,
+      parentId: parentId || 0,
+      isPublic: isPublic || false,
       localpath,
     };
     const result = await Filecollection.insertOne(newFile);
