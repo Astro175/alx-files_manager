@@ -59,8 +59,8 @@ class FilesController {
         isPublic: isPublic || false,
       };
       const results = await Filecollection.insertOne(newFile);
-      const folder = results.ops[0];
-      return res.status(201).send(folder);
+      const folder = { ...results.ops[0] };
+      return res.status(201).send({ ...folder, id: folder.insertedId });
     }
 
     const directoryPath = process.env.FOLDER_PATH || '/tmp/files_manager';
@@ -92,8 +92,9 @@ class FilesController {
       localpath,
     };
     const result = await Filecollection.insertOne(newFile);
-    const folder = result.ops[0];
-    return res.status(201).send(folder);
+    const folder = { ...result.ops[0] };
+    delete folder.localpath;
+    return res.status(201).send({ ...folder, id: folder.insertedId });
   }
 }
 
