@@ -7,7 +7,6 @@ const { promisify } = require('util');
 const mkdir = promisify(require('fs').mkdir);
 
 const fs = require('fs').promises;
-const path = require('path');
 
 const Usercollection = dbClient.client.db('files_manager').collection('users');
 const Filecollection = dbClient.client.db('files_manager').collection('files');
@@ -66,8 +65,8 @@ class FilesController {
 
     const directoryPath = process.env.FOLDER_PATH || '/tmp/files_manager';
     const filename = uuidv4();
-    const filepath = path.join(directoryPath, filename);
     const fileData = Buffer.from(data, 'base64');
+    const localpath = `${directoryPath}/${filename}`;
 
     async function ensuredirexists(dirPath) {
       try {
@@ -78,11 +77,10 @@ class FilesController {
     }
     await ensuredirexists(directoryPath);
     try {
-      await fs.writeFile(filepath, fileData);
+      await fs.writeFile(localpath, fileData);
     } catch (err) {
       console.log(`Got an error trying to write to a file: ${err.message}`);
     }
-    const localpath = `${directoryPath}/${filename}`;
 
     console.log(userId);
     const newFile = {
