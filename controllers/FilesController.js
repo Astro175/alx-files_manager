@@ -120,8 +120,8 @@ class FilesController {
 
   static async getIndex(req, res) {
     const token = req.headers['x-token'];
-    const parentId = req.query.parentId || 0;
-    const page = req.query.page || 1;
+    const parentId = parseInt(req.query.parentId, 10) || 0;
+    const page = req.query.page || 0;
     const filePerPage = 20;
     const arr = [];
 
@@ -138,8 +138,8 @@ class FilesController {
     // if (!checkfile) return [];
 
     const pipeline = [
-      { $match: { parentId } },
-      { $skip: (page - 1) * filePerPage },
+      { $match: { parentId, userId: user._id } },
+      { $skip: (page) * filePerPage },
       { $limit: filePerPage },
     ];
     const files = await Filecollection.aggregate(pipeline);
