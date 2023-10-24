@@ -121,7 +121,7 @@ class FilesController {
   static async getIndex(req, res) {
     const token = req.headers['x-token'];
     const parentId = req.query.parentId || 0;
-    const page = req.query.page || 0;
+    const page = req.query.page || 1;
     const filePerPage = 20;
     const arr = [];
 
@@ -133,13 +133,13 @@ class FilesController {
 
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
-    const checkfile = await Filecollection.findOne({ userId: id, parentId });
+    // const checkfile = await Filecollection.findOne({ userId: id, parentId });
 
-    if (!checkfile) return [];
+    // if (!checkfile) return [];
 
     const pipeline = [
       { $match: { parentId } },
-      { $skip: page * filePerPage },
+      { $skip: (page - 1) * filePerPage },
       { $limit: filePerPage },
     ];
     const files = await Filecollection.aggregate(pipeline);
