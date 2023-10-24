@@ -101,7 +101,7 @@ class FilesController {
     const fileId = req.params.id;
     const token = req.headers['x-token'];
 
-    if (!fileId || !token) return res.status(401).json({ error: 'Bad Request' });
+    if (!fileId || !token) return res.status(401).json({ error: 'Unauthorized' });
 
     const key = `auth_${token}`;
 
@@ -113,9 +113,9 @@ class FilesController {
 
     const file = await Filecollection.findOne({ _id: fileId, userId });
 
-    if (!file) return res.status(401).json({ error: 'Not found' });
+    if (!file) return res.status(404).json({ error: 'Not found' });
 
-    return res.send(201).json(file);
+    return res.status(201).json(file);
   }
 
   static async getIndex(req, res) {
