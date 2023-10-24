@@ -106,6 +106,7 @@ class FilesController {
     const key = `auth_${token}`;
 
     const userId = await redisClient.get(key);
+    if (!userId) return res.status(401).json({ error: 'Unauthorized' });
     const user = await Usercollection.findOne({ _id: ObjectId(userId) });
 
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
@@ -126,6 +127,8 @@ class FilesController {
 
     const key = `auth_${token}`;
     const id = await redisClient.get(key);
+
+    if (!id) return res.status(401).json({ error: 'Unauthorized' });
     const user = await Usercollection.findOne({ _id: ObjectId(id) });
 
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
