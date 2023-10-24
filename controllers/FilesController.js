@@ -133,6 +133,10 @@ class FilesController {
 
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
+    const checkfile = await Filecollection.findOne({ userId: id, parentId });
+
+    if (!checkfile) return [];
+
     const pipeline = [
       { $match: { parentId } },
       { $skip: page * filePerPage },
