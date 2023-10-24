@@ -96,6 +96,59 @@ class FilesController {
     delete folder.localpath;
     return res.status(201).send({ ...folder, id: folder.insertedId });
   }
+
+  static async getShow(req, res) {
+    const fileId = req.params.id;
+    const token = req.headers['x-token'];
+
+    if (!fileId || !token) return res.status(401).json({ error: 'Bad Request' });
+
+    const key = `auth_${token}`;
+
+    const userId = await redisClient.get(key);
+    const user = Usercollection.find({ _id: ObjectId(userId) });
+
+    if (!user) return res.status(401).json({ error: 'Unauthorized' });
+
+    const file = await Filecollection.find({ _id: fileId, userId });
+
+    if (!file) return res.status(401).json({ error: 'Not found' });
+
+    return res.send(201).json(file);
+  }
+
+  static async getIndex(req, res) {
+    const token = req.headers['x-token'];
+    const parentId = req.query.parentId || 0;
+    const page = req.query.page || 0;
+    const filePerPage = 20;
+    const arr = [];
+
+    const key = `auth_${token}`;
+    const id = await redisClient.get(key);
+    const user = await Usercollection.find({ _id: ObjectId(id) });
+
+    if (!user) return res.status(401).json({ error: 'Unauthorized' });
+
+    const pipeline = [
+      { $match: { parentId } },
+      { $skip: page * filePerPage },
+      { $limit: filePerPage },
+    ];
+    const files = await Filecollection.aggregate(pipeline);
+    await files.forEach((result) => {
+      const file = {
+        id: result.id,
+        userId: result.userId,
+        name: result.name,
+        type: result.type,
+        parentId: result.parentId,
+        isPublic: result.isPublic,
+      };
+      arr.push(file);
+    });
+    return res.status(201).json(arr);
+  }
 }
 
 module.exports = FilesController;
