@@ -183,28 +183,43 @@ class FilesController {
 
     const key = `auth_${token}`;
     const _id = await redisClient.get(key);
+    let newFile = {};
 
     console.log(_id);
 
     const user = await Usercollection.findOne({ _id: ObjectId(_id) });
 
-    console.log(user);
-
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
-    const file = await Filecollection.findOneAndUpdate(
-      { _id: ObjectId(id), userId: user._id },
-      { $set: { isPublic: true } },
-      { returnDocument: 'after' },
-    );
+    const filter = { _id: ObjectId(id), userId: user._id };
+    const update = { $set: { isPublic: true } };
 
-    if (!file) return res.status(404).json({ error: 'Not found' });
+    const oldFile = await Filecollection.findOne(filter);
 
-    const updatedFile = file.value;
-    updatedFile.id = updatedFile._id;
-    delete updatedFile._id;
+    if (!oldFile) return res.status(404).json({ error: 'Not found' });
 
-    return res.status(200).send(updatedFile);
+    console.log(oldFile);
+
+    if (oldFile.isPublic === false) {
+      const updatedDocument = await Filecollection.updateOne(filter, update);
+
+      if (updatedDocument.modifiedCount === 1) {
+        const modifiedDocument = await Filecollection.findOne(filter);
+
+        newFile.id = modifiedDocument._id;
+        newFile.userId = modifiedDocument.userId;
+        newFile.name = modifiedDocument.name;
+        newFile.type = modifiedDocument.type;
+        newFile.isPublic = modifiedDocument.isPublic;
+        newFile.parentId = modifiedDocument.parentId;
+      }
+    } else {
+      newFile = oldFile;
+      newFile.id = oldFile._id;
+      delete newFile._id;
+      delete newFile.localpath;
+    }
+    return res.status(200).json(newFile);
   }
 
   static async putUnpublish(req, res) {
@@ -217,28 +232,43 @@ class FilesController {
 
     const key = `auth_${token}`;
     const _id = await redisClient.get(key);
+    let newFile = {};
 
     console.log(_id);
 
     const user = await Usercollection.findOne({ _id: ObjectId(_id) });
 
-    console.log(user);
-
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
-    const file = await Filecollection.findOneAndUpdate(
-      { _id: ObjectId(id), userId: user._id },
-      { $set: { isPublic: false } },
-      { returnDocument: 'after' },
-    );
+    const filter = { _id: ObjectId(id), userId: user._id };
+    const update = { $set: { isPublic: false } };
 
-    if (!file) return res.status(404).json({ error: 'Not found' });
+    const oldFile = await Filecollection.findOne(filter);
 
-    const updatedFile = file.value;
-    updatedFile.id = updatedFile._id;
-    delete updatedFile._id;
+    if (!oldFile) return res.status(404).json({ error: 'Not found' });
 
-    return res.status(200).send(updatedFile);
+    console.log(oldFile);
+
+    if (oldFile.isPublic === true) {
+      const updatedDocument = await Filecollection.updateOne(filter, update);
+
+      if (updatedDocument.modifiedCount === 1) {
+        const modifiedDocument = await Filecollection.findOne(filter);
+
+        newFile.id = modifiedDocument._id;
+        newFile.userId = modifiedDocument.userId;
+        newFile.name = modifiedDocument.name;
+        newFile.type = modifiedDocument.type;
+        newFile.isPublic = modifiedDocument.isPublic;
+        newFile.parentId = modifiedDocument.parentId;
+      }
+    } else {
+      newFile = oldFile;
+      newFile.id = oldFile._id;
+      delete newFile._id;
+      delete newFile.localpath;
+    }
+    return res.status(200).json(newFile);
   }
 }
 
