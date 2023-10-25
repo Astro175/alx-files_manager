@@ -111,7 +111,7 @@ class FilesController {
 
     if (!user) return res.status(401).json({ error: 'Unauthorized' });
 
-    const file = await Filecollection.findOne({ _id: fileId, userId });
+    const file = await Filecollection.findOne({ _id: fileId, userId: user._id });
 
     if (!file) return res.status(404).json({ error: 'Not found' });
 
@@ -124,6 +124,8 @@ class FilesController {
     const page = req.query.page || 0;
     const filePerPage = 20;
     const arr = [];
+
+    if (!parentId || !page) return res.status(401).json({ error: 'Unauthorized' });
 
     const key = `auth_${token}`;
     const id = await redisClient.get(key);
@@ -139,7 +141,7 @@ class FilesController {
 
     const pipeline = [
       { $match: { parentId, userId: user._id } },
-      { $skip: (page) * filePerPage },
+      { $skip: page * filePerPage },
       { $limit: filePerPage },
     ];
     const files = await Filecollection.aggregate(pipeline);
