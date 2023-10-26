@@ -60,7 +60,10 @@ class FilesController {
       };
       const results = await Filecollection.insertOne(newFile);
       const folder = { ...results.ops[0] };
-      return res.status(201).send({ ...folder, id: folder.insertedId });
+      delete folder.localpath;
+      const folderId = folder._id;
+      delete folder._id;
+      return res.status(201).send({ ...folder, id: folderId });
     }
 
     const directoryPath = process.env.FOLDER_PATH || '/tmp/files_manager';
@@ -82,7 +85,6 @@ class FilesController {
       console.log(`Got an error trying to write to a file: ${err.message}`);
     }
 
-    console.log(userId);
     const newFile = {
       userId,
       name,
@@ -94,7 +96,9 @@ class FilesController {
     const result = await Filecollection.insertOne(newFile);
     const folder = { ...result.ops[0] };
     delete folder.localpath;
-    return res.status(201).send({ ...folder, id: folder.insertedId });
+    const folderId = folder._id;
+    delete folder._id;
+    return res.status(201).send({ ...folder, id: folderId });
   }
 
   static async getShow(req, res) {
