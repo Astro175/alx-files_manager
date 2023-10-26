@@ -130,7 +130,7 @@ class FilesController {
     } else {
       return res.status(404).json({ error: 'Not found' });
     }
-    return res.status(201).json(fetchedFile);
+    return res.status(200).json(fetchedFile);
   }
 
   static async getIndex(req, res) {
@@ -176,7 +176,7 @@ class FilesController {
       };
       arr.push(file);
     });
-    return res.status(201).json(arr);
+    return res.status(200).json(arr);
   }
 
   static async putPublish(req, res) {
