@@ -104,6 +104,7 @@ class FilesController {
   static async getShow(req, res) {
     const fileId = req.params.id;
     const token = req.headers['x-token'];
+    let fetchedFile;
 
     if (!fileId || !token) return res.status(401).json({ error: 'Unauthorized' });
 
@@ -117,17 +118,18 @@ class FilesController {
 
     const file = await Filecollection.findOne({ _id: ObjectId(fileId), userId: user._id });
 
-    if (!file) return res.status(404).json({ error: 'Not found' });
-
-    const fetchedFile = {
-      id: file._id,
-      userId: file.userId,
-      name: file.name,
-      type: file.type,
-      isPublic: file.isPublic,
-      parentId: file.parentId,
-    };
-
+    if (file) {
+      fetchedFile = {
+        id: file._id,
+        userId: file.userId,
+        name: file.name,
+        type: file.type,
+        isPublic: file.isPublic,
+        parentId: file.parentId,
+      };
+    } else {
+      return res.status(200).json({ error: 'Not found' });
+    }
     return res.status(201).json(fetchedFile);
   }
 
