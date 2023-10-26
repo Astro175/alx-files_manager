@@ -128,7 +128,7 @@ class FilesController {
         parentId: file.parentId,
       };
     } else {
-      return res.status(200).json({ error: 'Not found' });
+      return res.status(404).json({ error: 'Not found' });
     }
     return res.status(201).json(fetchedFile);
   }
